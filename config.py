@@ -5,7 +5,7 @@ Page number that you crawl from those websites.
 * if your crawl task is not heavy, set page_num=2~5
 * if you'd like to keep a proxies pool, page_num=10 can meet your need.
 """
-page_num = 1
+page_num = 10
 
 # ip test timeout.
 timeout = 2
