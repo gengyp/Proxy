@@ -9,7 +9,7 @@ import config as cfg
 import random
 
 '''
-CREATE TABLE "jiake"."game_buff_163" (
+CREATE TABLE "jiake"."game_buff_goods" (
 "index" serial,
 "steam_price" text COLLATE "default",
 "steam_price_cny" text COLLATE "default",
@@ -22,8 +22,20 @@ CREATE TABLE "jiake"."game_buff_163" (
 "name" text COLLATE "default",
 "buy_num" int8,
 "game" text COLLATE "default",
+"goods_id" int8,
+"appid" int8,
 "create_time" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )WITH (OIDS=FALSE);
+
+COMMENT ON COLUMN "jiake"."game_buff_goods"."steam_price" IS 'Steam美元价';
+COMMENT ON COLUMN "jiake"."game_buff_goods"."steam_price_cny" IS 'Steam人名币价';
+COMMENT ON COLUMN "jiake"."game_buff_goods"."buy_max_price" IS '求购最大单价';
+COMMENT ON COLUMN "jiake"."game_buff_goods"."sell_num" IS '当前在售数';
+COMMENT ON COLUMN "jiake"."game_buff_goods"."sell_min_price" IS '当前最小售价';
+COMMENT ON COLUMN "jiake"."game_buff_goods"."name" IS '商品中文名称';
+COMMENT ON COLUMN "jiake"."game_buff_goods"."buy_num" IS '当前求购数量';
+COMMENT ON COLUMN "jiake"."game_buff_goods"."game" IS '游戏名称';
+COMMENT ON COLUMN "jiake"."game_buff_goods"."appid" IS '游戏代码';
 '''
 def get_proxy():
   conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
@@ -56,26 +68,41 @@ def get_data(ip_lst):
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
       'X-Requested-With': 'XMLHttpRequest'
         }
-
-    for i in range(200):
+    # DOTA2 数据量较大，只爬取求购数据
+    for i in range(132):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
-      querystring = {"game":"dota2","page_num":"{}".format(20+i),"sort_by":"price.desc","_":"1556434296404"}
-      r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-      save_data2db(json.loads(r.text))
+      querystring = {"game":"dota2","page_num":"{}".format(18+i),"sort_by":"price.desc","_":"1556434296404"} # dota2 求购
+      try:
+        r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
+        save_data2db(json.loads(r.text))
+      except Exception as e:
+        raise e
+      time.sleep(1)
+
+    # H1Z1 求购数据较少，故爬取出售数据
+    time.sleep(10)
+    for i in range(2):
+      proxy = {'http': 'http://' + random.choice(ip_lst)}
+      querystring = {"game":"h1z1","page_num":"{}".format(2+i),"sort_by":"price.desc","_":"1556461440132"}
+      try:
+        r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
+        save_data2db(json.loads(r.text))
+      except Exception as e:
+        raise e
       time.sleep(0.5)
 
-def save_data2db(dt):
-  page_num = dt['data']['page_num']
-  page_size = dt['data']['page_size']
-  total_count = dt['data']['total_count']
-  total_page = dt['data']['total_page']
+def save_data2db(dts):
+  page_num = dts['data']['page_num']
+  page_size = dts['data']['page_size']
+  total_count = dts['data']['total_count']
+  total_page = dts['data']['total_page']
   print('当前页数：{}商品数量：{}商品总数：{}网页数：{}'.format(page_num,page_size,total_count,total_page))
 
   # col_name = ['steam_price','steam_price_cny','market_hash_name','buy_max_price'
   #   ,'sell_num','sell_min_price','sell_reference_price','quick_price','name','buy_num','game']
 
   lst = []
-  for dt in dt['data']['items']:
+  for dt in dts['data']['items']:
     steam_price = dt['goods_info']['steam_price']
     steam_price_cny = dt['goods_info']['steam_price_cny']
     market_hash_name = dt['market_hash_name'].replace("'",'')
@@ -87,24 +114,39 @@ def save_data2db(dt):
     name = dt['name'].replace("'",'')
     buy_num = dt['buy_num']
     game = dt['game']
+    goods_id = dt.get('id',0)
+    appid = dt.get('appid',0)
 
     lst.append([steam_price,steam_price_cny,market_hash_name,buy_max_price,sell_num
-      ,sell_min_price,sell_reference_price,quick_price,name,buy_num,game])
+      ,sell_min_price,sell_reference_price,quick_price,name,buy_num,game,goods_id,appid])
   # df = pd.DataFrame(lst)
   # df.columns = col_name
 
   # store valid proxies into db.
   print ("\n>>>>>>>>>>>>>>>>>>>> Insert to database Start  <<<<<<<<<<<<<<<<<<<<<<")
-  conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
-  cursor = conn.cursor()
-  for i,t in enumerate(lst):
-    sql = '''INSERT INTO jiake.game_buff_163(steam_price,steam_price_cny,market_hash_name,buy_max_price,sell_num,sell_min_price,
-      sell_reference_price,quick_price,name,buy_num,game) VALUES('{}','{}', '{}','{}', '{}','{}', '{}','{}', '{}', {},'{}')'''.format(*t)
-    cursor.execute(sql)
-    conn.commit()
-    print (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+"insert successfully."+str(i+1),end='\r')
+  try:
+    conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
+    cursor = conn.cursor()
+    for i,t in enumerate(lst):
+      sql = '''INSERT INTO jiake.game_buff_goods(steam_price,steam_price_cny,market_hash_name,buy_max_price,sell_num,sell_min_price,
+        sell_reference_price,quick_price,name,buy_num,game,goods_id,appid) VALUES('{}','{}', '{}','{}', '{}','{}', '{}','{}', '{}', {},'{}',{},{})'''.format(*t)
+      cursor.execute(sql)
+      conn.commit()
+      print (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+"insert successfully."+str(i+1),end='\r')
+  except Exception as e:
+    raise e
+  finally:
+    cursor.close()
+    conn.close()
   print( ">>>>>>>>>>>>>>>>>>>> Insert to database Ended  <<<<<<<<<<<<<<<<<<<<<<")
 
 if __name__ == '__main__':
+  conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
+  cursor = conn.cursor()
+  sql = "DELETE FROM jiake.game_buff_goods"
+  cursor.execute(sql) # 删除当前数据
+  cursor.close()
+  conn.close()
+
   ip_list = get_proxy()
   get_data(ip_list)
