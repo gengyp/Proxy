@@ -16,6 +16,7 @@ class IPFactory(object):
     * crawl
     * evaluation
     * storage
+    * train
     """
 
     def __init__(self):
