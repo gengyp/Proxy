@@ -6,7 +6,7 @@ import datetime
 import psycopg2
 
 from lxml import etree
-import pymysql as mdc
+# import pymysql as mdb
 from multiprocessing import Process, Manager
 import config as cfg
 
