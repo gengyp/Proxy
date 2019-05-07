@@ -123,7 +123,7 @@ class IPFactory(object):
         url_xpath_xici = '//table//tr[position()>1]/td[2]/text()'
         port_xpath_xici = '//table//tr[position()>1]/td[position()=3]/text()'
         for i in range(self.page_num):
-            url_xici = 'http://www.xicidaili.com/nn/' + str(i+1)
+            url_xici = 'http://www.xicidaili.com/nn/' + str(i+20)
             results = self.get_content(url_xici, headers, url_xpath_xici, port_xpath_xici)
             print('current url is {} total num is {}'.format(url_xici,len(results)))
             self.all_ip.update(results)
@@ -137,7 +137,7 @@ class IPFactory(object):
         url_xpath_kuaidaili = '//table//td[1]/text()'
         port_xpath_kuaidaili = '//td[@data-title="PORT"]/text()'
         for i in range(self.page_num):
-            url_kuaidaili = 'http://www.kuaidaili.com/free/inha/' + str(i+1) + '/'
+            url_kuaidaili = 'http://www.kuaidaili.com/free/inha/' + str(i+10) + '/'
             results = self.get_content(url_kuaidaili, headers, url_xpath_kuaidaili, port_xpath_kuaidaili)
             print('current url is {} total num is {}'.format(url_kuaidaili,len(results)))
             self.all_ip.update(results)
