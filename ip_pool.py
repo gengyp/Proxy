@@ -153,7 +153,7 @@ class IPFactory(object):
         """
         # request url.
         # url = 'http://httpbin.org/get?show_env=1'
-        # url = 'http://github.com'
+        url = 'http://github.com'
         url = 'https://buff.163.com/market/?game=dota2#tab=buying&page_num=1'
 
         # check proxy one by one
