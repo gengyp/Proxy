@@ -6,7 +6,7 @@ import datetime
 import psycopg2
 
 from lxml import etree
-import pymysql as mdb
+# import pymysql as mdb
 from multiprocessing import Process, Manager
 import config as cfg
 
@@ -16,7 +16,6 @@ class IPFactory(object):
     * crawl
     * evaluation
     * storage
-    * test
     """
 
     def __init__(self):
@@ -274,7 +273,7 @@ def main():
       manager_list = manager.list()
       current_ips = ip_pool.get_all_ip()
       ip_pool.multi_thread_validation(current_ips, manager_list, cfg.timeout)
-      print ("\n>>>>>>>>>>>>> Valid proxies <<<<<<<<<<")
+      # print ("\n>>>>>>>>>>>>> Valid proxies <<<<<<<<<<")
       ip_pool.save_to_db(manager_list)
       time.sleep(cfg.CHECK_TIME_INTERVAL)
 
