@@ -6,7 +6,7 @@ import datetime
 import psycopg2
 
 from lxml import etree
-# import pymysql as mdb
+import pymysql as mdc
 from multiprocessing import Process, Manager
 import config as cfg
 
@@ -153,7 +153,7 @@ class IPFactory(object):
         """
         # request url.
         # url = 'http://httpbin.org/get?show_env=1'
-        url = 'http://github.com'
+        # url = 'http://github.com'
         url = 'https://buff.163.com/market/?game=dota2#tab=buying&page_num=1'
 
         # check proxy one by one
@@ -273,7 +273,7 @@ def main():
       manager_list = manager.list()
       current_ips = ip_pool.get_all_ip()
       ip_pool.multi_thread_validation(current_ips, manager_list, cfg.timeout)
-      print ("\n>>>>>>>>>>>>> Valid proxies <<<<<<<<<<")
+      # print ("\n>>>>>>>>>>>>> Valid proxies <<<<<<<<<<")
       ip_pool.save_to_db(manager_list)
       time.sleep(cfg.CHECK_TIME_INTERVAL)
 
