@@ -212,7 +212,7 @@ class IPFactory(object):
                 # judge if proxy valid
                 if r.status_code == 200:
                     print ('succeed: ' + p + '\t' + " succeed in " + format(end-start, '0.4f') + 's!')
-                    print(json.loads(r.text)['origin'])
+                    # print(json.loads(r.text)['origin'])
                     # add to result
                     manager_list.append(p)
             except Exception:
@@ -327,12 +327,8 @@ def main():
 if __name__ == '__main__':
   # main()
   ip_pool = IPFactory()
-  while True:
-    # manager = Manager()
-    # manager_list = manager.list()
-    manager_list = []
-    current_ips = ip_pool.get_all_ip()
-    ip_pool.get_valid_ip(current_ips, manager_list, cfg.timeout)
-    print ("\n>>>>>>>>>>>>> Valid proxies <<<<<<<<<<")
-    ip_pool.save_to_db(manager_list)
-    time.sleep(cfg.CHECK_TIME_INTERVAL)
+  manager_list = []
+  current_ips = ip_pool.get_all_ip()
+  ip_pool.get_valid_ip(current_ips, manager_list, cfg.timeout)
+  print ("\n>>>>>>>>>>>>> Valid proxies <<<<<<<<<<")
+  ip_pool.save_to_db(manager_list)
