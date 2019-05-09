@@ -29,7 +29,8 @@ DB_NAME = 'linzi'
 SCHEMA_NAME = 'jiake'
 
 # table name
-TABLE_NAME = 'proxy_ips'
+TABLE_NAME = 'proxy_ips_games'
+# TABLE_NAME = 'proxy_ips'
 
 # max failure times of an ip, if exceed, delete it from db.
 USELESS_TIME = 4

@@ -43,15 +43,15 @@ class IPFactory(object):
         """
         '''sql statement'''
         create_table_str = """CREATE TABLE {}.{}(
-          id SERIAL PRIMARY KEY,
+          id_ SERIAL PRIMARY KEY,
           content varchar(30) NOT NULL,
-          test_times int NOT NULL DEFAULT 0,
-          failure_times int NOT NULL DEFAULT 0,
-          success_rate NUMERIC NOT NULL DEFAULT 0.00,
-          avg_response_time NUMERIC NOT NULL DEFAULT 0,
-          score NUMERIC NOT NULL DEFAULT 0.00,
-          create_time DEFAULT CURRENT_TIMESTAMP
-        );""".format(cfg.SCHEMA_NAME,cfg.TABLE_NAME)
+          test_times int4 DEFAULT 1 NOT NULL,,
+          failure_times int4 DEFAULT 0 NOT NULL,
+          success_rate float8 DEFAULT 0.0 NOT NULL,
+          avg_response_time float8 DEFAULT 1.0 NOT NULL,
+          score float8 DEFAULT 2.5 NOT NULL,
+          create_time timestamp(6) DEFAULT CURRENT_TIMESTAMP
+        )WITH (OIDS=FALSE);""".format(cfg.SCHEMA_NAME,cfg.TABLE_NAME)
 
         # database connection
         # conn = mdb.connect(cfg.host, cfg.user, cfg.passwd)  # mysql
