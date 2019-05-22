@@ -97,7 +97,7 @@ def modify_score(ip, success, response_time):
 def ip_test(proxies, timeout):
     url = 'https://www.baidu.com'
     # url = 'https://httpbin.org/get?show_env=1'
-    url = 'https://buff.163.com/market/goods?goods_id=9307&from=market#tab=selling'
+    url = 'https://buff.163.com/market/?game=dota2#tab=selling&page_num=1'
     for p in proxies:
         proxy = {'http': 'http://'+p}
         try:
