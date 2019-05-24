@@ -1,3 +1,4 @@
+# coding:utf8
 import requests
 import psycopg2
 import config as cfg
@@ -15,7 +16,7 @@ try:
     for i in result:
         ip_list.append(i[0])
 except Exception as e:
-    print (e)
+    print(e)
 finally:
     cursor.close()
     conn.close()
@@ -24,4 +25,4 @@ for i in ip_list:
     proxy = {'http': 'http://'+i}
     url = "https://www.github.com/"
     r = requests.get(url, proxies=proxy, timeout=4)
-    print r.headers
+    print(r.headers)

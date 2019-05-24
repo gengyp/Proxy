@@ -1,5 +1,6 @@
 # coding:utf-8
 import time
+import json
 import random
 import requests
 import datetime
@@ -16,6 +17,15 @@ class IPFactory(object):
     * crawl
     * evaluation
     * storage
+
+    国内免费代理网址：
+    1. http://www.66ip.cn/
+    2. 开放代理：https://www.kuaidaili.com/ops/proxylist/1
+    3. 国内高匿代理：https://www.kuaidaili.com/free/inha/
+    4. 国内普通代理：https://www.kuaidaili.com/free/intr/
+    5. http://www.ip181.com/daili/1.html
+    6. 国内高匿代理：https://www.xicidaili.com/nn/1
+    7. 国内普通代理：https://www.xicidaili.com/nt/1
     """
 
     def __init__(self):
@@ -33,15 +43,15 @@ class IPFactory(object):
         """
         '''sql statement'''
         create_table_str = """CREATE TABLE {}.{}(
-          id SERIAL PRIMARY KEY,
+          id_ SERIAL PRIMARY KEY,
           content varchar(30) NOT NULL,
-          test_times int NOT NULL DEFAULT 0,
-          failure_times int NOT NULL DEFAULT 0,
-          success_rate NUMERIC NOT NULL DEFAULT 0.00,
-          avg_response_time NUMERIC NOT NULL DEFAULT 0,
-          score NUMERIC NOT NULL DEFAULT 0.00,
-          create_time DEFAULT CURRENT_TIMESTAMP
-        );""".format(cfg.SCHEMA_NAME,cfg.TABLE_NAME)
+          test_times int4 DEFAULT 1 NOT NULL,,
+          failure_times int4 DEFAULT 0 NOT NULL,
+          success_rate float8 DEFAULT 0.0 NOT NULL,
+          avg_response_time float8 DEFAULT 1.0 NOT NULL,
+          score float8 DEFAULT 2.5 NOT NULL,
+          create_time timestamp(6) DEFAULT CURRENT_TIMESTAMP
+        )WITH (OIDS=FALSE);""".format(cfg.SCHEMA_NAME,cfg.TABLE_NAME)
 
         # database connection
         # conn = mdb.connect(cfg.host, cfg.user, cfg.passwd)  # mysql
@@ -91,30 +101,56 @@ class IPFactory(object):
         """
         current_all_ip = set()
 
-        ##################################
-        # 66ip (http://www.66ip.cn/)
-        ###################################
-        headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
-          'Accept-Encoding': 'gzip, deflate',
-          'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-          'Connection': 'keep-alive',
-          'Cookie': '__jsluid=15b7448e51f7b794a2c866666c1ed9ec; __jsl_clearance=1556417585.047|0|%2BjpvyhSJn%2BGq843RJfT8JlA0heQ%3D; Hm_lvt_1761fabf3c988e7f04bec51acd4073f4=1556372899,1556378485,1556417587; Hm_lpvt_1761fabf3c988e7f04bec51acd4073f4=1556417596',
-          'Host': 'www.66ip.cn',
-          'Referer': 'http://www.66ip.cn/index.html',
-          'Upgrade-Insecure-Requests': '1',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
-        url_xpath_66 = '/html/body//table//tr[position()>1]/td[1]/text()'
-        port_xpath_66 = '/html/body//table//tr[position()>1]/td[2]/text()'
-        for i in range(self.page_num):
-            url_66 = 'http://www.66ip.cn/' + str(i+1) + '.html'
-            results = self.get_content(url_66, headers, url_xpath_66, port_xpath_66)
-            print('current url is {} total num is {}'.format(url_66,len(results)))
+        # ##################################
+        # # 66ip (http://www.66ip.cn/)
+        # # 适合一次性爬取，每次需要修改 cookie
+        # ###################################
+        # headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+        #     'Accept-Encoding': 'gzip, deflate',
+        #     'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+        #     'Connection': 'keep-alive',
+        #     'Cookie': '__jsluid=15b7448e51f7b794a2c866666c1ed9ec; Hm_lvt_1761fabf3c988e7f04bec51acd4073f4=1556378485,1556417587,1557033216,1557316623; __jsl_clearance=1557323571.368|0|uoKeWmRKmGtzJ5uNB7cMlRHI%2FcA%3D; Hm_lpvt_1761fabf3c988e7f04bec51acd4073f4=1557323573',
+        #     'Host': 'www.66ip.cn',
+        #     'Referer': 'http://www.66ip.cn/',
+        #     'Upgrade-Insecure-Requests': '1',
+        #     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
+        # url_xpath_66 = '/html/body//table//tr[position()>1]/td[1]/text()'
+        # port_xpath_66 = '/html/body//table//tr[position()>1]/td[2]/text()'
+        # for i in range(1605):
+        #     url_66 = 'http://www.66ip.cn/' + str(i+1) + '.html'
+        #     results = self.get_content(url_66, headers, url_xpath_66, port_xpath_66)
+        #     print('current url is {} total num is {}'.format(url_66,len(results)))
+        #     self.all_ip.update(results)
+        #     current_all_ip.update(results)
+        #     time.sleep(0.1)
 
-            if len(results):
-                self.all_ip.update(results)
-                current_all_ip.update(results)
-                # wait 0.5 secs.
-                time.sleep(0.5)
+        ##################################
+        # kuaidaili (http://www.kuaidaili.com/)
+        ###################################
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
+        url_xpath_kuaidaili = '//td[@data-title="IP"]/text()'
+        port_xpath_kuaidaili = '//td[@data-title="PORT"]/text()'
+        for i in range(10):
+            url_kuaidaili = 'https://www.kuaidaili.com/ops/proxylist/' + str(i+1) + '/'
+            results = self.get_content(url_kuaidaili, headers, url_xpath_kuaidaili, port_xpath_kuaidaili)
+            print('current url is {} total num is {}'.format(url_kuaidaili,len(results)))
+            self.all_ip.update(results)
+            current_all_ip.update(results)
+            time.sleep(0.5)
+        for i in range(self.page_num):
+            url_kuaidaili = 'http://www.kuaidaili.com/free/inha/' + str(i+1) + '/'
+            results = self.get_content(url_kuaidaili, headers, url_xpath_kuaidaili, port_xpath_kuaidaili)
+            print('current url is {} total num is {}'.format(url_kuaidaili,len(results)))
+            self.all_ip.update(results)
+            current_all_ip.update(results)
+            time.sleep(0.5)
+        for i in range(self.page_num):
+            url_kuaidaili = 'http://www.kuaidaili.com/free/intr/' + str(i+1) + '/'
+            results = self.get_content(url_kuaidaili, headers, url_xpath_kuaidaili, port_xpath_kuaidaili)
+            print('current url is {} total num is {}'.format(url_kuaidaili,len(results)))
+            self.all_ip.update(results)
+            current_all_ip.update(results)
+            time.sleep(0.5)
 
         ##################################
         # xicidaili (http://www.xicidaili.com/nn/)
@@ -123,7 +159,14 @@ class IPFactory(object):
         url_xpath_xici = '//table//tr[position()>1]/td[2]/text()'
         port_xpath_xici = '//table//tr[position()>1]/td[position()=3]/text()'
         for i in range(self.page_num):
-            url_xici = 'http://www.xicidaili.com/nn/' + str(i+20)
+            url_xici = 'http://www.xicidaili.com/nn/' + str(i+1)
+            results = self.get_content(url_xici, headers, url_xpath_xici, port_xpath_xici)
+            print('current url is {} total num is {}'.format(url_xici,len(results)))
+            self.all_ip.update(results)
+            current_all_ip.update(results)
+            time.sleep(0.5)
+        for i in range(self.page_num):
+            url_xici = 'http://www.xicidaili.com/nt/' + str(i+1)
             results = self.get_content(url_xici, headers, url_xpath_xici, port_xpath_xici)
             print('current url is {} total num is {}'.format(url_xici,len(results)))
             self.all_ip.update(results)
@@ -131,15 +174,17 @@ class IPFactory(object):
             time.sleep(0.5)
 
         ##################################
-        # kuaidaili (http://www.kuaidaili.com/)
+        # ip181 (http://www.ip181.com/daili/1.html)
         ###################################
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
-        url_xpath_kuaidaili = '//table//td[1]/text()'
-        port_xpath_kuaidaili = '//td[@data-title="PORT"]/text()'
         for i in range(self.page_num):
-            url_kuaidaili = 'http://www.kuaidaili.com/free/inha/' + str(i+10) + '/'
-            results = self.get_content(url_kuaidaili, headers, url_xpath_kuaidaili, port_xpath_kuaidaili)
-            print('current url is {} total num is {}'.format(url_kuaidaili,len(results)))
+            url_ip181 = 'http://www.ip181.com/daili/' + str(i+1) + '.html'
+            try:
+                r = requests.get(url_ip181,headers=headers,timeout=10)
+                results = [dt['ip']+':'+dt['port'] for dt in json.loads(r.text)['RESULT']]
+            except Exception as e:
+                raise e
+            print('current url is {} total num is {}'.format(url_ip181,len(results)))
             self.all_ip.update(results)
             current_all_ip.update(results)
             time.sleep(0.5)
@@ -152,9 +197,9 @@ class IPFactory(object):
         test if ip is valid.
         """
         # request url.
-        # url = 'http://httpbin.org/get?show_env=1'
-        # url = 'http://github.com'
+        # url = 'http://httpbin.org/get?show_env=1' # 获取请求的IP
         url = 'https://buff.163.com/market/?game=dota2#tab=buying&page_num=1'
+
 
         # check proxy one by one
         for p in ip_set:
@@ -166,11 +211,12 @@ class IPFactory(object):
 
                 # judge if proxy valid
                 if r.status_code == 200:
-                    print ('succeed: ' + p + '\t' + " succeed in " + format(end-start, '0.4f') + 's!',end='\r')
+                    print ('succeed: ' + p + '\t' + " succeed in " + format(end-start, '0.4f') + 's!')
+                    # print(json.loads(r.text)['origin'])
                     # add to result
                     manager_list.append(p)
             except Exception:
-                print (p + "\t timeout.")
+                print (p + "\t timeout.",end='\r')
 
     def multi_thread_validation(self, ip_set, manager_list, timeout, thread=50):
         """
@@ -281,12 +327,8 @@ def main():
 if __name__ == '__main__':
   # main()
   ip_pool = IPFactory()
-  while True:
-    # manager = Manager()
-    # manager_list = manager.list()
-    manager_list = []
-    current_ips = ip_pool.get_all_ip()
-    ip_pool.get_valid_ip(current_ips, manager_list, cfg.timeout)
-    print ("\n>>>>>>>>>>>>> Valid proxies <<<<<<<<<<")
-    ip_pool.save_to_db(manager_list)
-    time.sleep(cfg.CHECK_TIME_INTERVAL)
+  manager_list = []
+  current_ips = ip_pool.get_all_ip()
+  ip_pool.get_valid_ip(current_ips, manager_list, cfg.timeout)
+  print ("\n>>>>>>>>>>>>> Valid proxies <<<<<<<<<<")
+  ip_pool.save_to_db(manager_list)

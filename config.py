@@ -8,7 +8,7 @@ Page number that you crawl from those websites.
 page_num = 10
 
 # ip test timeout.
-timeout = 2
+timeout = 5
 
 # database host
 host = 'localhost'
@@ -29,16 +29,17 @@ DB_NAME = 'linzi'
 SCHEMA_NAME = 'jiake'
 
 # table name
-TABLE_NAME = 'proxy_ips'
+TABLE_NAME = 'proxy_ips_games'
+# TABLE_NAME = 'proxy_ips'
 
 # max failure times of an ip, if exceed, delete it from db.
 USELESS_TIME = 4
 
 # lowest success rate of an ip, if exceed, delete it from db.
-SUCCESS_RATE = 0.8
+SUCCESS_RATE = 0.7
 
 # timeout punishment
-TIME_OUT_PENALTY = 10
+TIME_OUT_PENALTY = 5
 
 # ip quality assessment time interval. (currently once per day.)
-CHECK_TIME_INTERVAL = 6*3600
+CHECK_TIME_INTERVAL = 24*3600
