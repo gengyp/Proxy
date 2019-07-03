@@ -3,7 +3,9 @@ Proxy
 A tiny tool for crawling, assessing, storing some useful proxies.[中文版](https://github.com/fancoo/Proxy/blob/master/README.zh-cn.md)
 
 ### Construct your ip pool
-First make sure `mysql` has been installed in your machine, and modify db connection information in `config.py`.
+First make sure `postgres` has been installed in your machine, and modify db connection information in `config.py`.
+1. step1: 在 navicate 中执行 db.sql 中的 所有sql
+2. 运行如下代码
 ```python
 # crawl, assess and store proxies
 python ip_pool.py
@@ -11,6 +13,8 @@ python ip_pool.py
 # assess proxies quality in db periodically.
 python assess_quality.py
 ```
+
+
 
 ### Demo on how to use these proxies.
 **Please first construct your ip pool.**
