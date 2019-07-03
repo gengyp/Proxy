@@ -33,39 +33,6 @@ class IPFactory(object):
         self.timeout = cfg.timeout
         self.all_ip = set()
 
-        # init database
-        # self.create_db()
-
-    def create_db(self):
-        """
-        default database is linzi,default schema is jiake
-        create table.
-        """
-        '''sql statement'''
-        create_table_str = """CREATE TABLE {}.{}(
-          id_ SERIAL PRIMARY KEY,
-          content varchar(30) NOT NULL,
-          test_times int4 DEFAULT 1 NOT NULL,,
-          failure_times int4 DEFAULT 0 NOT NULL,
-          success_rate float8 DEFAULT 0.0 NOT NULL,
-          avg_response_time float8 DEFAULT 1.0 NOT NULL,
-          score float8 DEFAULT 2.5 NOT NULL,
-          create_time timestamp(6) DEFAULT CURRENT_TIMESTAMP
-        )WITH (OIDS=FALSE);""".format(cfg.SCHEMA_NAME,cfg.TABLE_NAME)
-
-        # database connection
-        # conn = mdb.connect(cfg.host, cfg.user, cfg.passwd)  # mysql
-        conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
-        cursor = conn.cursor()
-        try:
-            cursor.execute(create_table_str)
-            conn.commit()
-        except OSError:
-            print ("cannot create table! please check your connection.")
-        finally:
-            cursor.close()
-            conn.close()
-
     def get_content(self, url, headers, url_xpath, port_xpath):
         """
         parse web html using xpath
@@ -183,7 +150,7 @@ class IPFactory(object):
                 r = requests.get(url_ip181,headers=headers,timeout=10)
                 results = [dt['ip']+':'+dt['port'] for dt in json.loads(r.text)['RESULT']]
             except Exception as e:
-                raise e
+                print('error! please check ...\n')
             print('current url is {} total num is {}'.format(url_ip181,len(results)))
             self.all_ip.update(results)
             current_all_ip.update(results)
@@ -325,7 +292,6 @@ def main():
 
 
 if __name__ == '__main__':
-  # main()
   ip_pool = IPFactory()
   manager_list = []
   current_ips = ip_pool.get_all_ip()
