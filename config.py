@@ -1,11 +1,13 @@
 # coding:utf-8
 
 """
+该文件配置了数据库连接的信息、以及创建的表名
+确保数据存储正确
 Page number that you crawl from those websites.
 * if your crawl task is not heavy, set page_num=2~5
 * if you'd like to keep a proxies pool, page_num=10 can meet your need.
 """
-page_num = 10
+page_num = 2
 
 # ip test timeout.
 timeout = 5
@@ -23,7 +25,7 @@ user = 'postgres'
 passwd = 'root'
 
 # db name
-DB_NAME = 'linzi'
+DB_NAME = 'postgres'
 
 # schema name
 SCHEMA_NAME = 'jiake'

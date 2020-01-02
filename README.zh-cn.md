@@ -3,7 +3,9 @@ Proxy
 一个小巧的代理ip抓取+评估+存储一体化的工具,使用requests+mysql完成。
 
 ### 使用
-有`ip_pool.py`和`assess_quality.py`两个程序，前者负责每天抓ip/评估/存进数据库，后者负责数据库中ip的清理和打分。
+1. 使用 `postgres` 数据库，并运行 `db.sql` 中的文件创建数据库、模式、表。修改 `config.py` 中的数据库连接信息
+
+2. 有`ip_pool.py`和`assess_quality.py`两个程序，前者负责每天抓ip/评估/存进数据库，后者负责数据库中ip的清理和打分。
 
 #### 运行程序
 首先确保你的电脑安装了`mysql`，此外你需要在`config.py`里将配置修改为自己数据库配置。
