@@ -4,8 +4,8 @@ A tiny tool for crawling, assessing, storing some useful proxies.[中文版](htt
 
 ### Construct your ip pool
 1. First make sure [postgres](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads) has been installed in your machine.
-2. 打开连接数据库的客户端（或pgAdmin 4 网页版），将 `https://github.com/gengyp/Proxy/blob/master/db.sql` 中sql 复制到query 中执行
-3. modify db connection information in `https://github.com/gengyp/Proxy/blob/master/config.py`.
+2. 打开连接数据库的客户端（或pgAdmin 4 网页版），将 [db.sql](https://github.com/gengyp/Proxy/blob/master/db.sql) 中sql 复制到query 中执行
+3. modify db connection information in [config.py](https://github.com/gengyp/Proxy/blob/master/config.py).
 4. 运行如下代码
 ```python
 # crawl, assess and store proxies
