@@ -3,11 +3,13 @@ Proxy
 A tiny tool for crawling, assessing, storing some useful proxies.[中文版](https://github.com/fancoo/Proxy/blob/master/README.zh-cn.md)
 
 ### Construct your ip pool
-First make sure `postgres` has been installed in your machine, and modify db connection information in `config.py`.
-1. step1: 在 navicate 中执行 db.sql 中的 所有sql
-2. 运行如下代码
+1. First make sure [postgres](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads) has been installed in your machine.
+2. 打开连接数据库的客户端（或pgAdmin 4 网页版），将 [db.sql](https://github.com/gengyp/Proxy/blob/master/db.sql) 中sql 复制到query 中执行
+3. modify db connection information in [config.py](https://github.com/gengyp/Proxy/blob/master/config.py).
+4. 运行如下代码
 ```python
 # crawl, assess and store proxies
+# make sure psycopg2 pkg has been installed
 python ip_pool.py
 
 # assess proxies quality in db periodically.
@@ -41,7 +43,7 @@ for i in ip_list:
     r = requests.get(url, proxies=proxy, timeout=4)
     print r.text
 ```
-More detail in [crawl_demo.py](https://github.com/fancoo/Proxy/blob/master/crawl_demo.py)。
+More detail in [crawl_demo.py](https://github.com/gengyp/Proxy/blob/master/crawl_demo.py)。
 
 ### Contact
-myfancoo@qq.com
+gengyanpeng12@foxmail.com

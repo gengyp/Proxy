@@ -1,7 +1,6 @@
--- 一个一个执行
-CREATE DATABASE linzi;
-CREATE SCHEMA jiake;
--- default database is linzi,default schema is jiake
+-- 创建 SCHEMA
+CREATE SCHEMA if not exists jiake;
+-- default database is postgres,default schema is jiake
 -- create table.
 CREATE TABLE jiake.proxy_ips_games(
   id_ SERIAL PRIMARY KEY,
